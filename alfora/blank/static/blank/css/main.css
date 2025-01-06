@@ -1,0 +1,71 @@
+::-webkit-scrollbar {
+  width: 0;
+}
+
+:root {
+  --index: calc(1vw + 1vh);
+  --main-bg-color: #fff;
+  --main-text-color: black;
+  --main-accent-color: #C04277;
+  --main-line-color: var(--main-text-color);
+  --main-line-size: calc(var(--index) * .025);
+  --main-oppacity: .8;
+  --main-padding: 0 calc(var(--index) * 12.5);
+}
+
+body {
+    background: #fff;
+}
+
+header {
+    background: #fff;
+    margin: auto 15%;
+
+    height: calc(var(--index) * 3);
+
+    display: flex;
+    align-items: center;
+
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    border-bottom: solid 1px black;
+}
+
+.logo {
+    color: black;
+
+    font-size: calc(var(--index) * 1.2);
+}
+
+header a {
+    text-decoration: none;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+}
+
+nav ul li {
+    color: black;
+    margin-left: calc(var(--index) * 1);
+
+    font-size: calc(var(--index) * .7);
+}
+
+nav ul li, nav ul a {
+    color: black;
+    text-decoration: none;
+}
+
+nav ul li:hover, nav ul li a:hover {
+    color: red;
+}
