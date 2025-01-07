@@ -69,3 +69,33 @@ nav ul li, nav ul a {
 nav ul li:hover, nav ul li a:hover {
     color: red;
 }
+
+section {
+    height: 100vh;
+
+    margin: auto 15%;
+
+    display: flex;
+
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: calc(var(--index) * 1);
+}
+
+section p {
+    font-size: calc(var(--index) * .7);
+}
+
+section img {
+    width: 100px;
+    height: 100px;
+    border: none;
+}
+
+.preview {
+    display: flex;
+    flex-direction:  row;
+    column-gap: calc(var(--index) * 1);
+    margin-top: calc(var(--index) * 1);
+}
