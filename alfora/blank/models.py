@@ -1,9 +1,9 @@
 from django.db import models # type: ignore
 
 class FileSave(models.Model):
-  file_passport = models.FileField(upload_to = 'upldfile/passport/')
-  file_snils = models.FileField(upload_to = 'upldfile/snils/')
-  file_lvplc = models.FileField(upload_to = 'upldfile/live_place/')
+  file_passport = models.FileField(upload_to = 'upldfile/passport/', null=True, blank=True)
+  file_snils = models.FileField(upload_to = 'upldfile/snils/', null=True, blank=True)
+  file_lvplc = models.FileField(upload_to = 'upldfile/live_place/', null=True, blank=True)
 
 class Clinic(models.Model):
   """Клиника"""
