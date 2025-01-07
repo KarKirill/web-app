@@ -22,6 +22,7 @@ class Clinic(models.Model):
   passport_date = models.TextField(verbose_name="Дата выдачи паспорта")
   departament_code = models.TextField(verbose_name="Код подразделения")
   place_of_residence = models.TextField(verbose_name="Место жительства")
+  passport = models.TextField(verbose_name="Серия и номер паспорта")
 
   def __str__(self):
-    return f"ФИО: {self.surname} {self.name} {self.middle_name}, Пол: {self.gender}, Дата рождения: {self.date_of_birth}, Дата выдачи паспорта: {self.passport_date}, Место выдачи паспорта: {self.passport_place}, Код подразделения: {self.departament_code}, Место жительства: {self.place_of_residence}, СНИЛС: {self.snils}"
+    return f"ФИО: {self.surname} {self.name} {self.middle_name}, Пол: {self.gender}, Дата рождения: {self.date_of_birth}, Дата выдачи паспорта: {self.passport_date}, Место выдачи паспорта: {self.passport_place}, Код подразделения: {self.departament_code}, Место жительства: {self.place_of_residence}, СНИЛС: {self.snils}, Паспорт: {self.passport}"
