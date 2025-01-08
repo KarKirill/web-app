@@ -22,7 +22,9 @@ def index(request):
     BASE_DIR = Path(__file__).resolve().parent.parent
     passport(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
     snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
-  context = {'name':'Kirill'}
+    passport_home_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\live_place\\{file_lvplc1}"))
+
+  context = {'surname':f'{surname}', 'name':f'{name}'}
   base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
   asset_url = base_url + 'temp.docx'
   print(asset_url)
@@ -32,10 +34,10 @@ def index(request):
   return render(request, 'blank/index.html')
 
 
-################################################################################################
+############################################## СНИЛС ##################################################
 
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
 snils = None
 surname = None
 name = None
@@ -119,7 +121,7 @@ def snils_ocr(image):
 
     return
 
-#####################################################################################################
+############################################# ПАСПОРТ ########################################################
 
 #обработка паспорта (первые страницы)
 
@@ -184,3 +186,80 @@ def passport(image):
 
     for i in lst:
         print(i)
+
+
+
+############################################# МЕСТО ЖИТЕЛЬСТВА ##################################################
+
+place_of_residense = ""
+
+def passport_home_ocr(image):
+    global place_of_residense
+    place_of_residense = ""
+
+    height, width = image.shape[:2]
+    image = image[0:int(height/2), 0:width]
+
+    image = get_grayscale(image)
+    list_passport_home = ocr(image)
+    list_passport_home = list_passport_home.strip().splitlines()
+
+    count = 0
+    for i in range(len(list_passport_home)):
+        if count == 0 and "ОБЛ" in list_passport_home[i]:
+            list_home = list_passport_home[i]
+            list_home = list_home.strip()
+
+            space_index = list_home.find(" ")
+            element_place = list_home[space_index:]
+            element_place = element_place.strip()
+
+            place_of_residense += "ОБЛ. "
+            place_of_residense += element_place
+            count += 1
+        elif count == 1 and "Р-Н" in list_passport_home[i]:
+            list_home = list_passport_home[i]
+            list_home = list_home.strip()
+
+            space_index = list_home.find(" ")
+            element_place = list_home[space_index:]
+            element_place = element_place.strip()
+            
+            place_of_residense += ", Р-Н. "
+            place_of_residense += element_place
+            count += 1
+
+        elif count == 2 and "Г" in list_passport_home[i]:
+            list_home = list_passport_home[i]
+            list_home = list_home.strip()
+
+            space_index = list_home.find(" ")
+            element_place = list_home[space_index:]
+            element_place = element_place.strip()
+            
+            place_of_residense += ", Г. "
+            place_of_residense += element_place
+            count += 1
+
+        elif count == 3 and "УЛ" in list_passport_home[i]:
+            list_home = list_passport_home[i]
+            list_home = list_home.strip()
+
+            space_index = list_home.find(". ")
+            element_place = list_home[space_index+2:]
+            element_place = element_place.strip()
+            
+            place_of_residense += ", УЛ. "
+            place_of_residense += element_place
+            count += 1
+
+        elif count == 4 and list_passport_home[i]:
+            place_of_residense += " "
+            place_of_residense += list_passport_home[i].strip()
+            count += 1
+
+    print("--------------------------------------")
+    print(place_of_residense)
+    print("--------------------------------------")
+
+    return
