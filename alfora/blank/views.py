@@ -3,9 +3,8 @@ from .models import FileSave
 from pathlib import Path
 
 import cv2 
-import numpy as np
-import matplotlib as plt
-import pytesseract 
+import pytesseract
+import re
 
 
 def index(request):
@@ -20,7 +19,7 @@ def index(request):
     )
     BASE_DIR = Path(__file__).resolve().parent.parent
     image = cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}")
-    
+    passport(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
     snils_ocr(image)
 
   return render(request, 'blank/index.html')
@@ -29,7 +28,7 @@ def index(request):
 ################################################################################################
 
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_OSR\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
 snils = None
 surname = None
 name = None
@@ -122,3 +121,63 @@ def snils_ocr(image):
     return
 
 #####################################################################################################
+
+#обработка паспорта (первые страницы)
+
+# получение серого изображения
+def get_grayscale(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+def turn(image):
+    (h, w) = image.shape[:2]
+    center = (w // 2, h // 2)
+    matrix = cv2.getRotationMatrix2D(center, 90, 1.0)
+    rotated = cv2.warpAffine(image, matrix, (h, w))
+    return rotated
+
+# обрезаем изображение
+def crop_center(img, crop_width, crop_height):
+    height, width = img.shape[:2]
+    
+    start_x = width // 2 - crop_width // 2
+    start_y = height // 2 - crop_height // 2
+
+    end_x = start_x + crop_width
+    end_y = start_y + crop_height
+
+    cropped_img = img[start_y:end_y, start_x:end_x]
+
+    return cropped_img
+
+
+
+# обработка главной страницы паспорта
+def passport(image):
+    lst = []
+    lst_help = []
+    img_passport = image
+    img_passport_2 = get_grayscale(img_passport) # изображение для остальной части паспорта
+    img_passport = turn(img_passport)
+    img_passport_1 = get_grayscale(img_passport) # изображение для серии и номера
+
+    # обрезаем изображение
+    crop_width = 600
+    crop_height = 500
+    img_passport_1 = crop_center(img_passport_1, crop_width, crop_height)
+
+    # считывание серии и номера
+    config = r'--oem 3 --psm 6'
+    text_series_number = pytesseract.image_to_string(img_passport_1, lang='rus', config=config)
+    pattern = r"(\d{2})\s(\d{2})\s(\d{6})"
+    match = re.search(pattern, text_series_number)
+    lst_help.append(match.group(1))
+    lst_help.append(match.group(2))
+    lst_help.append(match.group(3))
+    series_number = "".join(lst_help)
+    lst.append(series_number)
+    
+    text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
+    print(text_other)
+
+    for i in lst:
+        print(i)
