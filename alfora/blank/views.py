@@ -18,9 +18,8 @@ def index(request):
       file_lvplc = file_lvplc1
     )
     BASE_DIR = Path(__file__).resolve().parent.parent
-    image = cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}")
     passport(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
-    snils_ocr(image)
+    snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
 
   return render(request, 'blank/index.html')
 
@@ -28,7 +27,7 @@ def index(request):
 ################################################################################################
 
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
 snils = None
 surname = None
 name = None
@@ -36,14 +35,6 @@ middle_name = None
 date_of_birth = None
 place_of_birth = ""
 gender = None
-
-# Перевод изображения в серые тона и выровнить его
-def do_grey_img(image):
-    # Серый
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, img_bin = cv2.threshold(image, 128, 255, cv2.THRESH_BINARY_INV)
-
-    return image
 
 # Считывание текста с изображения
 def ocr(image):
@@ -65,7 +56,7 @@ def snils_ocr(image):
     date_of_birth = None
     place_of_birth = ""
     gender = None
-    image = do_grey_img(image)
+    image = get_grayscale(image)
     list_snils = ocr(image)
     list_snils = list_snils.strip().splitlines()
     count = 0
@@ -170,11 +161,15 @@ def passport(image):
     text_series_number = pytesseract.image_to_string(img_passport_1, lang='rus', config=config)
     pattern = r"(\d{2})\s(\d{2})\s(\d{6})"
     match = re.search(pattern, text_series_number)
-    lst_help.append(match.group(1))
-    lst_help.append(match.group(2))
-    lst_help.append(match.group(3))
-    series_number = "".join(lst_help)
-    lst.append(series_number)
+    try:
+      lst_help.append(match.group(1))
+      lst_help.append(match.group(2))
+      lst_help.append(match.group(3))
+      series_number = "".join(lst_help)
+      lst.append(series_number)
+    except Exception as e:
+        print(f"Некачественное изображение паспорта: {e}")
+        return None
     
     text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
     print(text_other)
