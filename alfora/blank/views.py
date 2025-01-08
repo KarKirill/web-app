@@ -6,6 +6,8 @@ import cv2
 import pytesseract
 import re
 
+from docxtpl import DocxTemplate
+from alfora.settings import MEDIA_ROOT
 
 def index(request):
   file_passport1 = request.FILES.get('file_passport')
@@ -20,14 +22,20 @@ def index(request):
     BASE_DIR = Path(__file__).resolve().parent.parent
     passport(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
     snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
-
+  context = {'name':'Kirill'}
+  base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
+  asset_url = base_url + 'temp.docx'
+  print(asset_url)
+  tpl = DocxTemplate(asset_url)
+  tpl.render(context)
+  tpl.save(base_url + 'test.docx')
   return render(request, 'blank/index.html')
 
 
 ################################################################################################
 
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
 snils = None
 surname = None
 name = None
