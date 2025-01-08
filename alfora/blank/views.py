@@ -37,7 +37,8 @@ def index(request):
 ############################################## СНИЛС ##################################################
 
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
 snils = None
 surname = None
 name = None
@@ -150,6 +151,9 @@ def crop_center(img, crop_width, crop_height):
 
     return cropped_img
 
+# для применения порога
+def thresholding(image):
+    return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 1201, 110)
 
 
 # обработка главной страницы паспорта
@@ -160,6 +164,9 @@ def passport(image):
     img_passport_2 = get_grayscale(img_passport) # изображение для остальной части паспорта
     img_passport = turn(img_passport)
     img_passport_1 = get_grayscale(img_passport) # изображение для серии и номера
+    img_passport_2 = thresholding(img_passport_2)
+    height, width = img_passport_2.shape[:2]
+    img_passport_2 = img_passport_2[0:int(height/2), 0:int(width/1.1)]
 
     # обрезаем изображение
     crop_width = 600
@@ -171,19 +178,40 @@ def passport(image):
     text_series_number = pytesseract.image_to_string(img_passport_1, lang='rus', config=config)
     pattern = r"(\d{2})\s(\d{2})\s(\d{6})"
     match = re.search(pattern, text_series_number)
+    lst_help.append(match.group(1))
+    lst_help.append(match.group(2))
+    lst_help.append(match.group(3))
+    series_number = "".join(lst_help)
+    lst.append(series_number)
+
+    # считывание всего остального   
+    text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
+
     try:
-      lst_help.append(match.group(1))
-      lst_help.append(match.group(2))
-      lst_help.append(match.group(3))
-      series_number = "".join(lst_help)
-      lst.append(series_number)
+        # считывание кем выдан
+        pattern_who = r"([А-Я\s]+)"
+        match_who = re.search(pattern_who, text_other)
+        lst.append(match_who.group(0).strip())
     except Exception as e:
-        print(f"Некачественное изображение паспорта: {e}")
+        print(f"Некачественное изображение кем выдан: {e}")
         return None
     
-    text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
-    print(text_other)
+    try:
+        # считывание даты выдачи
+        pattern_date = r"(\d{2})\.(\d{2})\.(\d{4})"
+        match_date = re.search(pattern_date, text_other)
+        lst.append(match_date.group(0))
+    except Exception as e:
+        print(f"Некачественное изображение даты: {e}")
+        return None
+    
+    
+    # считывание кода подразделения
+    pattern_kod = r"\d{3}-\d{3}"
+    match_kod = re.search(pattern_kod, text_other)
+    lst.append(match_kod.group(0))
 
+    # вывод всех считанных данных
     for i in lst:
         print(i)
 
