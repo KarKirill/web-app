@@ -20,11 +20,14 @@ def index(request):
       file_lvplc = file_lvplc1
     )
     BASE_DIR = Path(__file__).resolve().parent.parent
-    passport(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
+    passport_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\passport\\{file_passport1}"))
     snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
     passport_home_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\live_place\\{file_lvplc1}"))
 
-  context = {'surname':f'{surname}', 'name':f'{name}'}
+  context = {'surname':f'{surname}', 'name':f'{name}', 'middle_name':f'{middle_name}', 'gender':f'{gender}',
+            'date_of_birth':f'{date_of_birth}', 'passport_date':f'{passport_date}', 'passport_place':f'{passport_place}',
+            'departament_code':f'{departament_code}', 'place_of_residence':f'{place_of_residense}',
+            'snils':f'{snils}', 'passport':f'{passport}'}
   base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
   asset_url = base_url + 'temp.docx'
   print(asset_url)
@@ -34,23 +37,60 @@ def index(request):
   return render(request, 'blank/index.html')
 
 
-############################################## СНИЛС ##################################################
+################################################# ФУНКЦИИ ###################################################
 
-
-# pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
-pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
 snils = None
 surname = None
 name = None
 middle_name = None
 date_of_birth = None
 place_of_birth = ""
+place_of_residense = ""
 gender = None
+passport = ""
+passport_place = ""
+passport_date = ""
+departament_code = ""
+
 
 # Считывание текста с изображения
 def ocr(image):
     text = pytesseract.image_to_string(image, lang='rus')
     return text
+
+# получение серого изображения
+def get_grayscale(image):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+def turn(image):
+    (h, w) = image.shape[:2]
+    center = (w // 2, h // 2)
+    matrix = cv2.getRotationMatrix2D(center, 90, 1.0)
+    rotated = cv2.warpAffine(image, matrix, (h, w))
+    return rotated
+
+# обрезаем изображение
+def crop_center(img, crop_width, crop_height):
+    height, width = img.shape[:2]
+    
+    start_x = width // 2 - crop_width // 2
+    start_y = height // 2 - crop_height // 2
+
+    end_x = start_x + crop_width
+    end_y = start_y + crop_height
+
+    cropped_img = img[start_y:end_y, start_x:end_x]
+
+    return cropped_img
+
+# для применения порога
+def thresholding(image):
+    return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 1201, 110)
+
+
+############################################## СНИЛС ##################################################
 
 def snils_ocr(image):
     global snils
@@ -124,41 +164,16 @@ def snils_ocr(image):
 
 ############################################# ПАСПОРТ ########################################################
 
-#обработка паспорта (первые страницы)
+def passport_ocr(image):
+    global passport
+    global passport_place
+    global passport_date
+    global departament_code
+    passport = ""
+    passport_place = ""
+    passport_date = ""
+    departament_code = ""
 
-# получение серого изображения
-def get_grayscale(image):
-    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-def turn(image):
-    (h, w) = image.shape[:2]
-    center = (w // 2, h // 2)
-    matrix = cv2.getRotationMatrix2D(center, 90, 1.0)
-    rotated = cv2.warpAffine(image, matrix, (h, w))
-    return rotated
-
-# обрезаем изображение
-def crop_center(img, crop_width, crop_height):
-    height, width = img.shape[:2]
-    
-    start_x = width // 2 - crop_width // 2
-    start_y = height // 2 - crop_height // 2
-
-    end_x = start_x + crop_width
-    end_y = start_y + crop_height
-
-    cropped_img = img[start_y:end_y, start_x:end_x]
-
-    return cropped_img
-
-# для применения порога
-def thresholding(image):
-    return cv2.adaptiveThreshold(image, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 1201, 110)
-
-
-# обработка главной страницы паспорта
-def passport(image):
-    lst = []
     lst_help = []
     img_passport = image
     img_passport_2 = get_grayscale(img_passport) # изображение для остальной части паспорта
@@ -182,7 +197,7 @@ def passport(image):
     lst_help.append(match.group(2))
     lst_help.append(match.group(3))
     series_number = "".join(lst_help)
-    lst.append(series_number)
+    passport = series_number
 
     # считывание всего остального   
     text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
@@ -191,7 +206,7 @@ def passport(image):
         # считывание кем выдан
         pattern_who = r"([А-Я\s]+)"
         match_who = re.search(pattern_who, text_other)
-        lst.append(match_who.group(0).strip())
+        passport_place = match_who.group(0).strip()  
     except Exception as e:
         print(f"Некачественное изображение кем выдан: {e}")
         return None
@@ -200,7 +215,7 @@ def passport(image):
         # считывание даты выдачи
         pattern_date = r"(\d{2})\.(\d{2})\.(\d{4})"
         match_date = re.search(pattern_date, text_other)
-        lst.append(match_date.group(0))
+        passport_date = match_date.group(0)
     except Exception as e:
         print(f"Некачественное изображение даты: {e}")
         return None
@@ -209,17 +224,18 @@ def passport(image):
     # считывание кода подразделения
     pattern_kod = r"\d{3}-\d{3}"
     match_kod = re.search(pattern_kod, text_other)
-    lst.append(match_kod.group(0))
+    departament_code = match_kod.group(0)
 
     # вывод всех считанных данных
-    for i in lst:
-        print(i)
+    print(passport)
+    print(passport_place)
+    print(passport_date)
+    print(departament_code)
+
 
 
 
 ############################################# МЕСТО ЖИТЕЛЬСТВА ##################################################
-
-place_of_residense = ""
 
 def passport_home_ocr(image):
     global place_of_residense
