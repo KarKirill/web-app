@@ -15,8 +15,10 @@
 
 body {
     background: #fff;
-    
+    position: relative;
     height: 100vh;
+    width: 100%;
+    margin: 0;
 }
 
 header {
@@ -147,9 +149,14 @@ input[type="file"]{
 /* ====================== FOOTER ==================== */
 
 footer {
-    margin-top: auto;
+    position: absolute;
     width: 100%;
     bottom: 0;
     height: calc(var(--index) * 5);
     background-color: var(--main-accent-color);
+}
+
+.iau {
+    margin: 0 15%;
+    background-color: black;
 }
