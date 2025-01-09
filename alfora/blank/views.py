@@ -56,17 +56,17 @@ def index(request):
 
 ################################################# ФУНКЦИИ ###################################################
 
-# pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
 # pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
-pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
-snils = None
-surname = None
-name = None
-middle_name = None
-date_of_birth = None
+# pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
+snils = ""
+surname = ""
+name = ""
+middle_name = ""
+date_of_birth = ""
 place_of_birth = ""
 place_of_residense = ""
-gender = None
+gender = ""
 passport = ""
 passport_place = ""
 passport_date = ""
@@ -118,40 +118,40 @@ def snils_ocr(image):
     global date_of_birth
     global place_of_birth
     global gender
-    snils = None
-    surname = None
-    name = None
-    middle_name = None
-    date_of_birth = None
+    snils = ""
+    surname = ""
+    name = ""
+    middle_name = ""
+    date_of_birth = ""
     place_of_birth = ""
-    gender = None
+    gender = ""
     image = get_grayscale(image)
     list_snils = ocr(image)
     list_snils = list_snils.strip().splitlines()
     count = 0
     for i in range(len(list_snils)):
-        if snils is None and list_snils[i] and list_snils[i][0].isdigit() and count == 0:  # Проверка на цифру в начале и, что item не пустой
+        if snils is "" and list_snils[i] and list_snils[i][0].isdigit() and count == 0:  # Проверка на цифру в начале и, что item не пустой
             snils = list_snils[i]
             snils = snils.strip()
             count += 1
             
-        elif surname is None and " " in list_snils[i] and count == 1: # Проверка на пробел
+        elif surname is "" and " " in list_snils[i] and count == 1: # Проверка на пробел
             space_index = list_snils[i].find(" ")
             surname = list_snils[i][space_index:]
             surname = surname.strip()
             count += 1
         
-        elif name is None and count == 2 and list_snils[i]:
+        elif name is "" and count == 2 and list_snils[i]:
             name = list_snils[i]
             name = name.strip()
             count += 1
 
-        elif middle_name is None and count == 3 and list_snils[i]:
+        elif middle_name is "" and count == 3 and list_snils[i]:
             middle_name = list_snils[i]
             middle_name = middle_name.strip()
             count += 1
 
-        elif date_of_birth is None and list_snils[i] and count == 4:
+        elif date_of_birth is "" and list_snils[i] and count == 4:
             for j, char in enumerate(list_snils[i]):  # Поиск первой цифры в строке
                 if char.isdigit():
                     date_of_birth = list_snils[i][j:]
@@ -162,7 +162,7 @@ def snils_ocr(image):
         elif count > 4 and count !=6 and list_snils[i]:
             if "Пол" not in list_snils[i]:
                 place_of_birth += list_snils[i]
-            elif gender is None and " " in list_snils[i]:
+            elif gender is "" and " " in list_snils[i]:
                 space_index = list_snils[i].find(" ")
                 gender = list_snils[i][space_index:]
                 gender = gender.strip()
@@ -227,7 +227,7 @@ def passport_ocr(image):
         passport_place = match_who.group(0).strip()  
     except Exception as e:
         print(f"Некачественное изображение кем выдан: {e}")
-        return None
+        return ""
     
     try:
         # считывание даты выдачи
@@ -236,7 +236,7 @@ def passport_ocr(image):
         passport_date = match_date.group(0)
     except Exception as e:
         print(f"Некачественное изображение даты: {e}")
-        return None
+        return ""
     
     
     # считывание кода подразделения
