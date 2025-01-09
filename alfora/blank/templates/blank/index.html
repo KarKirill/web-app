@@ -6,8 +6,9 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Welcome to Al'fora!</title>
+    <title>Al'fora!</title>
     <link rel="stylesheet" href="{% static 'blank/css/main.css' %}">
+    <script src="{% static 'blank/js/main.js' %}"></script>
 </head>
 <body>
     <header>
@@ -21,25 +22,34 @@
             </ul>
         </nav>
     </header>
+    {% block content %}
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-1">
             <label for="formFileMultiple"></label>
-            <input type="file" name="file_passport" id="formFileMultiple">
-            <input type="file" name="file_snils" id="formFileMultiple">
-            <input type="file" name="file_lvplc" id="formFileMultiple">
+            <input type="file" name="file_passport" id="formFileMultiple" accept="image/*" >
+            <input type="file" name="file_snils" id="formFileMultiple" accept="image/*" >
+            <input type="file" name="file_lvplc" id="formFileMultiple" accept="image/*" >
         </div>
-        <button type="submit">Submit</button>
+        <div class="mb-1__btn">
+            <button class="mb-1__btn-style" type="submit">Отправить данные</button>
+        </div>
     </form>
-    <a href="{{ MEDIA_URL }}upldfile/docx/test.docx" download="test.txt">Бланк!</a>
-    {% for i in man %}
-    <div class="bount">
-        {{ i.id }}
-        {{ i.name }}
-        {{ i.surname }}
+    <div class="blank-btn">
+        <a href="{{ MEDIA_URL }}upldfile/docx/test.docx" download="test.docx">Скачать бланк</a>
     </div>
-    {% endfor %}
-    {% block content %}
+    <!-- {% if man %}
+        {% for i in man %}
+        <div class="bount">
+            {{ i.id }}
+            {{ i.name }}
+            {{ i.surname }}
+        </div>
+        {% endfor %}
+    {% endif %} -->
     {% endblock %}
+    <footer>
+        
+    </footer>
 </body>
 </html>

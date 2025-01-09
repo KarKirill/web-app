@@ -56,9 +56,9 @@ def index(request):
 
 ################################################# ФУНКЦИИ ###################################################
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
 # pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
-# pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
 snils = ""
 surname = ""
 name = ""
@@ -130,28 +130,28 @@ def snils_ocr(image):
     list_snils = list_snils.strip().splitlines()
     count = 0
     for i in range(len(list_snils)):
-        if snils is "" and list_snils[i] and list_snils[i][0].isdigit() and count == 0:  # Проверка на цифру в начале и, что item не пустой
+        if snils == "" and list_snils[i] and list_snils[i][0].isdigit() and count == 0:  # Проверка на цифру в начале и, что item не пустой
             snils = list_snils[i]
             snils = snils.strip()
             count += 1
             
-        elif surname is "" and " " in list_snils[i] and count == 1: # Проверка на пробел
+        elif surname == "" and " " in list_snils[i] and count == 1: # Проверка на пробел
             space_index = list_snils[i].find(" ")
             surname = list_snils[i][space_index:]
             surname = surname.strip()
             count += 1
         
-        elif name is "" and count == 2 and list_snils[i]:
+        elif name == "" and count == 2 and list_snils[i]:
             name = list_snils[i]
             name = name.strip()
             count += 1
 
-        elif middle_name is "" and count == 3 and list_snils[i]:
+        elif middle_name == "" and count == 3 and list_snils[i]:
             middle_name = list_snils[i]
             middle_name = middle_name.strip()
             count += 1
 
-        elif date_of_birth is "" and list_snils[i] and count == 4:
+        elif date_of_birth == "" and list_snils[i] and count == 4:
             for j, char in enumerate(list_snils[i]):  # Поиск первой цифры в строке
                 if char.isdigit():
                     date_of_birth = list_snils[i][j:]
@@ -162,7 +162,7 @@ def snils_ocr(image):
         elif count > 4 and count !=6 and list_snils[i]:
             if "Пол" not in list_snils[i]:
                 place_of_birth += list_snils[i]
-            elif gender is "" and " " in list_snils[i]:
+            elif gender == "" and " " in list_snils[i]:
                 space_index = list_snils[i].find(" ")
                 gender = list_snils[i][space_index:]
                 gender = gender.strip()
@@ -211,11 +211,15 @@ def passport_ocr(image):
     text_series_number = pytesseract.image_to_string(img_passport_1, lang='rus', config=config)
     pattern = r"(\d{2})\s(\d{2})\s(\d{6})"
     match = re.search(pattern, text_series_number)
-    lst_help.append(match.group(1))
-    lst_help.append(match.group(2))
-    lst_help.append(match.group(3))
-    series_number = "".join(lst_help)
-    passport = series_number
+    try:
+      lst_help.append(match.group(1))
+      lst_help.append(match.group(2))
+      lst_help.append(match.group(3))
+      series_number = "".join(lst_help)
+      passport = series_number
+    except Exception as e:
+      print(f"Некачественное изображение серии и номера: {e}")
+      return ""
 
     # считывание всего остального   
     text_other = pytesseract.image_to_string(img_passport_2, lang='rus', config=config)
