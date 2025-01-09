@@ -89,14 +89,16 @@ form {
     height: 50px;
     width: 50px;
     display: block;
-}
+} */
 
 input[type="file"]{
-    z-index: 2;
+    /* z-index: 2;
     height: 50px;
     width: 50px;
-    display: block;
-} */
+    display: block; */
+    border: solid 1px black;
+    border-radius: 10px;
+}
 
 .blank-btn {
     display: flex;
@@ -159,4 +161,30 @@ footer {
 .iau {
     margin: 0 15%;
     background-color: black;
+}
+
+/* ========================== */
+
+.pas::before{
+    content: "Паспорт";
+    display: block;
+    color: black;
+    font-size: calc(var(--index) * .8);
+    text-align: center;
+}
+
+.sni::before{
+    content: "СНИЛС";
+    display: block;
+    color: black;
+    font-size: calc(var(--index) * .8);
+    text-align: center;
+}
+
+.live::before{
+    content: "Прописка";
+    display: block;
+    color: black;
+    font-size: calc(var(--index) * .8);
+    text-align: center;
 }
