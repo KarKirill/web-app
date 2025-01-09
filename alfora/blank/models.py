@@ -8,6 +8,9 @@ class FileSave(models.Model):
 class Clinic(models.Model):
   """Клиника"""
 
+  def __str__(self):
+    return self.name
+
   class Meta:
     db_table = "clinic"
     verbose_name = "Клиника"

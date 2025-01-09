@@ -1,5 +1,5 @@
 from django.shortcuts import render # type: ignore
-from .models import FileSave
+from .models import FileSave, Clinic
 from pathlib import Path
 
 import cv2 
@@ -24,23 +24,41 @@ def index(request):
     snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
     passport_home_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\live_place\\{file_lvplc1}"))
 
-  context = {'surname':f'{surname}', 'name':f'{name}', 'middle_name':f'{middle_name}', 'gender':f'{gender}',
-            'date_of_birth':f'{date_of_birth}', 'passport_date':f'{passport_date}', 'passport_place':f'{passport_place}',
-            'departament_code':f'{departament_code}', 'place_of_residence':f'{place_of_residense}',
-            'snils':f'{snils}', 'passport':f'{passport}'}
-  base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
-  asset_url = base_url + 'temp.docx'
-  print(asset_url)
-  tpl = DocxTemplate(asset_url)
-  tpl.render(context)
-  tpl.save(base_url + 'test.docx')
-  return render(request, 'blank/index.html')
+    context = {'surname':f'{surname}', 'name':f'{name}', 'middle_name':f'{middle_name}', 'gender':f'{gender}',
+                'date_of_birth':f'{date_of_birth}', 'passport_date':f'{passport_date}', 'passport_place':f'{passport_place}',
+                'departament_code':f'{departament_code}', 'place_of_residence':f'{place_of_residense}',
+                'snils':f'{snils}', 'passport':f'{passport}', 'place_of_birth':f'{place_of_birth}'}
+    base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
+    asset_url = base_url + 'temp.docx'
+    print(asset_url)
+    tpl = DocxTemplate(asset_url)
+    tpl.render(context)
+    tpl.save(base_url + 'test.docx')
+
+    Clinic.objects.create (
+        surname = surname,
+        name = name,
+        middle_name = middle_name,
+        gender = gender,
+        date_of_birth = date_of_birth,
+        passport_date = passport_date,
+        passport_place = passport_place,
+        departament_code = departament_code,
+        place_of_residence = place_of_residense,
+        snils = snils,
+        passport = passport,
+        place_of_birth = place_of_birth
+    )
+
+  man = Clinic.objects.all()
+  return render(request, 'blank/index.html', {'man': man})
 
 
 ################################################# ФУНКЦИИ ###################################################
 
-pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = "D:\\Nikita\\Tesseract_osr\\tesseract.exe"
 # pytesseract.pytesseract.tesseract_cmd = "D:\\Programming\\Tesseract\\tesseract.exe"
+pytesseract.pytesseract.tesseract_cmd = "D:\\tesseract\\tesseract.exe"
 snils = None
 surname = None
 name = None
