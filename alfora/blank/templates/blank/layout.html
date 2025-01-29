@@ -1,0 +1,38 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Al'fora{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'blank/css/reset.css' %}">
+  <link rel="stylesheet" href="{% static 'blank/css/form.css' %}">
+  <link rel="stylesheet" href="{% static 'blank/css/footer.css' %}">
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="nav__logo nav-a"><a href="{% url 'home' %}">Al'fora</a></div>
+      <div class="nav__info">
+        <ul>
+          <li class="nav-a"><a href="{% url 'home' %}">Врачи</a></li>
+          <li class="nav-a"><a href="{% url 'blank' %}">Запись</a></li>
+          <li class="nav-a"><a href="{% url 'home' %}">О нас</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+  {% block main %}{% endblock %}
+  {% block footer %}
+  <footer>
+    <ul class="list">
+      <li><a href="{% url 'home' %}">Карасев Кирилл</a></li>
+      <li><a href="{% url 'home' %}">Белохвостиков Николай</a></li>
+      <li><a href="{% url 'home' %}">Белохвостиков Никита</a></li>
+      <li><a href="{% url 'home' %}">Code Eaters</a></li>
+    </ul>
+  </footer>
+  {% endblock %}
+</body>
+</html>

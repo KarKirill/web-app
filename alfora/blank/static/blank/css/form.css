@@ -1,0 +1,14 @@
+:root {
+	--section-margin: 0 20rem;
+	--border-line: 1.5px solid black;
+}
+
+.container {
+    margin: var(--section-margin);
+}
+
+.blank-btn a,
+.blank-btn {
+    text-decoration: none;
+    color: black;
+}

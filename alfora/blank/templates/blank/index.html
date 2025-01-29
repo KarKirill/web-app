@@ -1,28 +1,7 @@
-{% load static %}
-<!doctype html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Al'fora!</title>
-    <link rel="stylesheet" href="{% static 'blank/css/main.css' %}">
-    <script src="{% static 'blank/js/main.js' %}"></script>
-</head>
-<body>
-    <header>
-        <a href="{% url 'home' %}"><span class="logo">Al'fora</span></a>
-
-        <nav>
-            <ul>
-                <li><a href="{% url 'home' %}">Главная</a></li>
-                <li><a href="#">О нас</a></li>
-                <li><a href="#">Запись</a></li>
-            </ul>
-        </nav>
-    </header>
-    {% block content %}
+{% extends 'blank/layout.html' %}
+{% block title %}Al'fora{% endblock %}
+{% block main %}
+<div class="container">
     <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="mb-1">
@@ -32,24 +11,11 @@
             <input class="live" type="file" name="file_lvplc" id="formFileMultiple" accept="image/*" >
         </div>
         <div class="mb-1__btn">
-            <button class="mb-1__btn-style" type="submit">Отправить данные</button>
+            <button class="mb-1__btn-style blank-btn" type="submit">Отправить данные</button>
         </div>
     </form>
     <div class="blank-btn">
         <a href="{{ MEDIA_URL }}upldfile/docx/test.docx" download="test.docx">Скачать бланк</a>
     </div>
-    <!-- {% if man %}
-        {% for i in man %}
-        <div class="bount">
-            {{ i.id }}
-            {{ i.name }}
-            {{ i.surname }}
-        </div>
-        {% endfor %}
-    {% endif %} -->
-    {% endblock %}
-    <footer>
-        <div class="iau">s</div>
-    </footer>
-</body>
-</html>
+</div>
+{% endblock %}

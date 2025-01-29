@@ -9,6 +9,9 @@ import re
 from docxtpl import DocxTemplate
 from alfora.settings import MEDIA_ROOT
 
+def home(request):
+    return render(request, 'blank/layout.html')
+
 def index(request):
   file_passport1 = request.FILES.get('file_passport')
   file_snils1 = request.FILES.get('file_snils')
