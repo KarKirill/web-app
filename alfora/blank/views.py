@@ -1,21 +1,24 @@
 from django.shortcuts import render # type: ignore
 from .models import FileSave, Clinic
 from pathlib import Path
+from docxtpl import DocxTemplate
+from alfora.settings import MEDIA_ROOT
 
 import cv2 
 import pytesseract
 import re
 
-from docxtpl import DocxTemplate
-from alfora.settings import MEDIA_ROOT
 
 def home(request):
     return render(request, 'blank/layout.html')
 
+
 def index(request):
+  
   file_passport1 = request.FILES.get('file_passport')
   file_snils1 = request.FILES.get('file_snils')
   file_lvplc1 = request.FILES.get('file_lvplc')
+  
   if file_passport1 and file_snils1 and file_lvplc1:
     FileSave.objects.create (
       file_passport = file_passport1,
@@ -27,10 +30,20 @@ def index(request):
     snils_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\snils\\{file_snils1}"))
     passport_home_ocr(cv2.imread(f"{BASE_DIR}\\media\\upldfile\\live_place\\{file_lvplc1}"))
 
-    context = {'surname':f'{surname}', 'name':f'{name}', 'middle_name':f'{middle_name}', 'gender':f'{gender}',
-                'date_of_birth':f'{date_of_birth}', 'passport_date':f'{passport_date}', 'passport_place':f'{passport_place}',
-                'departament_code':f'{departament_code}', 'place_of_residence':f'{place_of_residense}',
-                'snils':f'{snils}', 'passport':f'{passport}', 'place_of_birth':f'{place_of_birth}'}
+    context = {
+        'surname':f'{surname}',
+        'name':f'{name}', 
+        'middle_name':f'{middle_name}', 
+        'gender':f'{gender}',
+        'date_of_birth':f'{date_of_birth}',
+        'passport_date':f'{passport_date}', 
+        'passport_place':f'{passport_place}',
+        'departament_code':f'{departament_code}',
+        'place_of_residence':f'{place_of_residense}',
+        'snils':f'{snils}', 
+        'passport':f'{passport}', 
+        'place_of_birth':f'{place_of_birth}'
+        }
     base_url = f"{MEDIA_ROOT}\\upldfile\\docx\\"
     asset_url = base_url + 'temp.docx'
     print(asset_url)
